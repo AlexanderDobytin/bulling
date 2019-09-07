@@ -6,6 +6,7 @@ import {
   Tooltip,
   Progress,
   Tag,
+  Empty,
   Alert,
   Row,
   Divider
@@ -67,6 +68,9 @@ class TbaleLoosers extends React.Component {
     const { store } = this.props;
     const attackers = store.getAttackers;
     const victim = store.getVictim;
+    if(attackers === undefined){
+        return <Empty/> ;
+    }
     const dataSource = attackers.map((item, i) => {
       return { ...item, key: "attackers" + i };
     });
