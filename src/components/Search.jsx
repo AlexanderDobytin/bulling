@@ -32,7 +32,6 @@ class Search extends React.Component {
     return (
       <Row type="flex" style={{ padding: "40px 0px" }} justify="center">
         <Col span={12}>
-          <h1> Антибуллинг 0.1 </h1>
           <Tabs defaultActiveKey="1">
             <TabPane tab={<div><Icon type="user" />Анализ страницы</div> } key="1">
               {!this.isSearching.personal ? (

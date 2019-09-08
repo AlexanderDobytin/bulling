@@ -6,43 +6,71 @@ import {
   Tooltip,
   Progress,
   Tag,
+  Col,
   Empty,
   Alert,
+  Button,
   Row,
   Divider
 } from "antd";
 import { observer, inject } from "mobx-react";
 import { Card } from "antd";
-
+const ButtonGroup = Button.Group;
 const columns = [
   {
-    title: "Имя актора",
+    title: "",
     dataIndex: "vkName",
     key: "vkName",
     render: (vkName, data) => {
-      return <a href={`https://vk.com/id${data.vkId}`}>{vkName}</a>;
+      return (
+        <div>
+          <a href={`https://vk.com/id${data.vkId}`}>{vkName}</a>
+          {data.aggressiveLevelAt !== 0 && (
+            <div>
+              <Divider />
+              <div style={{ display: "flex", justifyContent: "space-between" }}>
+                <Tooltip title={"Залокировать"}>
+                  <Button icon="close" type="danger"></Button>
+                </Tooltip>
+                <Tooltip title="Пожаловаться">
+                  <Button icon="warning" type="primary"></Button>
+                </Tooltip>
+                <Tooltip title={"Позвонить его маме"}>
+                  <Button icon="phone" type="primary"></Button>
+                </Tooltip>
+              </div>
+            </div>
+          )}
+        </div>
+      );
     }
   },
   {
-    title: "Оценка акивности на странице",
+    title: "Оценка агрессии на странице",
     dataIndex: "aggressiveLevelAt",
     key: "aggressiveLevelAt",
-    render: (aggressiveLevelAt,data) => {
+    render: (aggressiveLevelAt, data) => {
       const getStatus = level => {
-        if (level < 3) {
+        if (level < 30) {
           return "низкая вероятность булинга";
         }
-        if (level < 7) {
+        if (level < 70) {
           return "подозрительная активность на странице";
         }
         return "высокая вероятность булинга";
       };
-     
+
       return (
-        <div>
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            flexDirection: "column"
+          }}
+        >
           <Tooltip title={getStatus(aggressiveLevelAt)}>
             <Progress
-              percent={aggressiveLevelAt }
+              percent={aggressiveLevelAt}
               format={() => `${aggressiveLevelAt}/100`}
               type="dashboard"
               strokeColor={{
@@ -51,11 +79,14 @@ const columns = [
               }}
             />
           </Tooltip>
-          
-          <div>{data.tags&& data.tags.map((tag,i) =>
-                <Tag key={'tag-'+i} color="red">{tag}</Tag>
-          )}
 
+          <div>
+            {data.tags &&
+              data.tags.map((tag, i) => (
+                <Tag key={"tag-" + i} color="red">
+                  {tag}
+                </Tag>
+              ))}
           </div>
         </div>
       );
@@ -71,10 +102,13 @@ class TbaleLoosers extends React.Component {
     const { store } = this.props;
     const attackers = store.getAttackers;
     const victim = store.getVictim;
-    if(attackers === undefined){
-        return <Empty/> ;
+    if (attackers === undefined) {
+      return <Empty />;
     }
-    const dataSource = attackers.map((item, i) => {
+    const sortA = attackers.sort((a, b) => {
+      return b.aggressiveLevelAt - a.aggressiveLevelAt;
+    });
+    const dataSource = sortA.map((item, i) => {
       return { ...item, key: "attackers" + i };
     });
     return (
@@ -87,9 +121,13 @@ class TbaleLoosers extends React.Component {
           />
         ) : (
           <div>
-              <Divider />
+            <Divider />
             <Alert
-              message={!!store.freeCount ? `Осталось ${store.freeCount} бесплатных анализа`:`Бесплатных анализов не осталось`}
+              message={
+                !!store.freeCount
+                  ? `Осталось ${store.freeCount} бесплатных анализа`
+                  : `Бесплатных анализов не осталось`
+              }
               description={
                 <span>
                   Для продления подписки пройдите по <a href="/">этой</a> ссылке
@@ -98,34 +136,37 @@ class TbaleLoosers extends React.Component {
               type="info"
               showIcon
             />
+            <Divider />
             <Row type="flex" justify="center">
-              <Card
-                hoverable
-                style={{ width: 240, margin: "40px auto" }}
-                cover={
-                  <img
-                    alt="example"
-                    src="https://sun9-22.userapi.com/c9704/u1908820/a_08ea628f.jpg?ava=1"
+              <Col span="8">
+                <Card
+                  hoverable
+                  style={{ with: "240px", marginRight: "20px" }}
+                  cover={
+                    <img
+                      alt="example"
+                      src="https://sun9-22.userapi.com/c9704/u1908820/a_08ea628f.jpg?ava=1"
+                    />
+                  }
+                >
+                  <Meta
+                    title={victim.vkName}
+                    description={`Оценка буллинга ${victim.bullingLevel}/100`}
                   />
-                }
-              >
-                <Meta
-                  title={victim.vkName}
-                  description={`Оценка буллинга ${victim.bullingLevel}/100`}
-                />
-                <Divider />
-                <Progress
-                  percent={victim.bullingLevel}
-                  format={() => `${victim.bullingLevel}/100`}
-                  type="dashboard"
-                  strokeColor={{
-                    "0%": "#f5222d",
-                    "100%": "#87d068"
-                  }}
-                />
-              </Card>
+                  <Divider />
+                  <Progress
+                    percent={victim.bullingLevel}
+                    strokeColor={{
+                      "0%": "#f5222d",
+                      "100%": "#87d068"
+                    }}
+                  />
+                </Card>
+              </Col>
+              <Col span="16">
+                <Table dataSource={dataSource} columns={columns} />
+              </Col>
             </Row>
-            <Table dataSource={dataSource} columns={columns} />
           </div>
         )}
 

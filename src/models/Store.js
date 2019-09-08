@@ -7,7 +7,7 @@ class Store {
   @observable fetchUserInfoHasError = false;
   @observable freeCount = 5;
   constructor() {
-    this.isAuthorized = !!this.auth;
+    this.isAuthorized = this.auth;
   }
 
   @computed get auth() {
