@@ -20,14 +20,14 @@ const columns = [
     dataIndex: "vkName",
     key: "vkName",
     render: (vkName, data) => {
-      return <a href={`https://vk.com/${data.vkId}`}>{vkName}</a>;
+      return <a href={`https://vk.com/id${data.vkId}`}>{vkName}</a>;
     }
   },
   {
     title: "Оценка акивности на странице",
     dataIndex: "aggressiveLevelAt",
     key: "aggressiveLevelAt",
-    render: aggressiveLevelAt => {
+    render: (aggressiveLevelAt,data) => {
       const getStatus = level => {
         if (level < 3) {
           return "низкая вероятность булинга";
@@ -37,12 +37,13 @@ const columns = [
         }
         return "высокая вероятность булинга";
       };
+     
       return (
         <div>
           <Tooltip title={getStatus(aggressiveLevelAt)}>
             <Progress
-              percent={aggressiveLevelAt * 10}
-              format={() => `${aggressiveLevelAt * 10}/100`}
+              percent={aggressiveLevelAt }
+              format={() => `${aggressiveLevelAt}/100`}
               type="dashboard"
               strokeColor={{
                 "0%": "#f5222d",
@@ -50,9 +51,11 @@ const columns = [
               }}
             />
           </Tooltip>
-          <div>
-            <Tag color="red">Мат в комментариях</Tag>
-            <Tag color="red">Оскорбительные фото</Tag>
+          
+          <div>{data.tags&& data.tags.map((tag,i) =>
+                <Tag key={'tag-'+i} color="red">{tag}</Tag>
+          )}
+
           </div>
         </div>
       );
@@ -102,7 +105,7 @@ class TbaleLoosers extends React.Component {
                 cover={
                   <img
                     alt="example"
-                    src="https://os.alipayobjects.com/rmsportal/QBnOOoLaAfKPirc.png"
+                    src="https://sun9-22.userapi.com/c9704/u1908820/a_08ea628f.jpg?ava=1"
                   />
                 }
               >

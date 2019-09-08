@@ -29,7 +29,6 @@ class Search extends React.Component {
   render() {
     const { TabPane } = Tabs;
     const {store} = this.props;
-    console.log(store.freeCount)
     return (
       <Row type="flex" style={{ padding: "40px 0px" }} justify="center">
         <Col span={12}>

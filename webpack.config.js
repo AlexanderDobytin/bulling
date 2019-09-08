@@ -12,6 +12,16 @@ module.exports = {
     filename: 'bundle.js',
     publicPath: '/static/'
   },
+  devServer: {
+    proxy: {
+      '/api': {
+        target: 'http://10.0.48.88:8000/anti-bulling/bulling/api/bulling/',
+        timeout:1800000,
+        proxyTimeout:1800000
+      }
+    
+    },
+  },
   plugins: [
     new webpack.HotModuleReplacementPlugin()
   ],
